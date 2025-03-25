@@ -1,11 +1,16 @@
+//validation isssue
+
 const express = require("express");
 const connectDB = require("./config/database");
 const app = express();
 const User = require("./models/user");
+const { validateSignUpdata } = require("./utils/validation");
 app.use(express.json());
+
 app.post("/signup", async (req, res) => {
-  const user = new User(req.body);
   try {
+    // validateSignUpdata(req);
+    const user = new User(req.body);
     await user.save();
     res.send("user added succefully");
   } catch (err) {
@@ -45,22 +50,21 @@ app.delete("/user", async (req, res) => {
 });
 /// update data of the user
 
-app.patch("/user", async (req, res) => {
-  const userId = req.body.userId;
+app.patch("/user/:userId", async (req, res) => {
+  const userId = req.params?.userId;
   const data = req.body;
-  const Allowed_updated = ["lastName", "password", "gender"];
-  const isUpdateAllowed = Object.keys(data).every((k) => {
-    Allowed_updated.includes(k);
-  });
-  if (!isUpdateAllowed) {
-    res.status(400).send("update not ");
-  }
   try {
+    const Allowed_updated = ["lastName"];
+    const isUpdateAllowed = Object.keys(data).every((k) => {
+      return Allowed_updated.includes(k);
+    });
+    if (!isUpdateAllowed) {
+      throw new Error("update is not allowed");
+    }
     //  const user=await User.findByIdAndUpdate({_id:userId},data,{returnDocument:"before"});
     const user = await User.findByIdAndUpdate({ _id: userId }, data, {
       runValidators: true,
     });
-
     res.send("updated now");
   } catch (err) {
     console.log(err.message);
