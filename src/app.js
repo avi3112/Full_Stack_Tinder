@@ -1,30 +1,32 @@
 const express = require("express");
-// order of writing the route a matter a alot
+const connectDB = require("./config/database");
 const app = express();
+const User = require("./models/user");
 
+app.post("/signup",async (req, res) => {
+  const user = new User({
+    firstName: "rock",
+    lastName: "kumar",
+    emailID: "test@saini.com",
+    password: "avinabh@123",
+  });
+  try {
+    await user.save()
+    res.send("user added succefully")
+  } catch (err) {
+    res.status(400).send("error saving the user"+err.message)
+  }
 
-// app.get("/user", (req, res) => {
-//   console.log(req.query);
-
-//   res.send({ firstname: "avinabh", lastname: "kumar" });
-// });
-// app.get("/user/:userID/:name/:password", (req, res) => {
-//   // console.log(req.query);
-//   console.log(req.params);
-
-//   res.send({ firstname: "avinabh", lastname: "kumar" });
-// });
-
-app.use("/user",[(req,res,next)=>{
-  console.log("handling the user route")
-  next()
-  //res.send("responce1")
-},
-(req,res)=>{
-  console.log("handling the user route 2")
-  res.send("responce2")
-}]
-)
-app.listen(7777, () => {
-  console.log("server running on 7777");
 });
+
+
+connectDB()
+  .then(() => {
+    console.log("database connected succefully");
+    app.listen(7777, () => {
+      console.log("server running on 7777");
+    });
+  })
+  .catch((err) => {
+    console.log("database cant be connected");
+  });
