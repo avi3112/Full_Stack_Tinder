@@ -1,20 +1,46 @@
 //validation isssue
-
 const express = require("express");
 const connectDB = require("./config/database");
 const app = express();
 const User = require("./models/user");
 const { validateSignUpdata } = require("./utils/validation");
+const bcrypt = require("bcrypt");
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
   try {
     // validateSignUpdata(req);
-    const user = new User(req.body);
+    const { firstName, lastName, emailID, password } = req.body;
+    const passwordHash = await bcrypt.hash(password, 10);
+    console.log(passwordHash);
+    const user = new User({
+      firstName,
+      lastName,
+      emailID,
+      password: passwordHash,
+    });
     await user.save();
     res.send("user added succefully");
   } catch (err) {
     res.status(400).send("error saving the user" + err.message);
+  }
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const { emailID, password } = req.body;
+    const user = await User.findOne({ emailID: emailID });
+    console.log(user);
+    if (!user) {
+      throw new Error("email id is not prenset in db");
+    }
+    const isPassworValid = await bcrypt.compare(password, user.password);
+    console.log(isPassworValid);
+    if (isPassworValid) {
+      res.send("user login succesfully");
+    }
+  } catch (err) {
+    res.status(400).send(err);
   }
 });
 app.get("/user", async (req, res) => {
