@@ -1,19 +1,21 @@
 const express = require("express");
-
+// order of writing the route a matter a alot
 const app = express();
-app.use("/", (req, res) => {
-  res.send("this is from home route");
+
+
+// app.get("/user", (req, res) => {
+//   console.log(req.query);
+
+//   res.send({ firstname: "avinabh", lastname: "kumar" });
+// });
+app.get("/user/:userID/:name/:password", (req, res) => {
+  // console.log(req.query);
+  console.log(req.params);
+
+  res.send({ firstname: "avinabh", lastname: "kumar" });
 });
 
-app.use("/test", (req, res) => {
-  res.send("this is from test route");
-});
 
-app.use("/hellow", (req, res) => {
-  console.log("heelo");
-  res.send("this is from hellow route");
-});
-
-app.listen(3000, () => {
-  console.log("server running on 3000");
+app.listen(7777, () => {
+  console.log("server running on 7777");
 });
