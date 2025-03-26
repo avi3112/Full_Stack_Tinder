@@ -12,7 +12,9 @@ profileRouter
 ConnectionRequestRouter
 -POST /request/send/interested/:userID
 -POST /request/send/ignore/:userID
--POST /request/review/accepted/:requestID
+-- above 2 done in one API itself
+
+-POST /request/review/:status/:requestID
 -POST /request/review/rejected/:requestID
 
 -GET /user/connection
