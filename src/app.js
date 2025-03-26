@@ -5,7 +5,11 @@ const app = express();
 const User = require("./models/user");
 const { validateSignUpdata } = require("./utils/validation");
 const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+const { userAuth } = require("./middlewares/auth");
 app.use(express.json());
+app.use(cookieParser());
 
 app.post("/signup", async (req, res) => {
   try {
@@ -35,15 +39,30 @@ app.post("/login", async (req, res) => {
       throw new Error("email id is not prenset in db");
     }
     const isPassworValid = await bcrypt.compare(password, user.password);
-    console.log(isPassworValid);
     if (isPassworValid) {
+      const token = await jwt.sign(
+        { _id: user._id },
+        "qwertyuioplkjhgfdsazxcvbnm",
+        { expiresIn: "2d" }
+      );
+      console.log(token);
+      res.cookie("token", token);
       res.send("user login succesfully");
     }
   } catch (err) {
     res.status(400).send(err);
   }
 });
-app.get("/user", async (req, res) => {
+
+app.get("/profile", userAuth, async (req, res) => {
+  try {
+    const user = req.user;
+    res.send(user);
+  } catch (error) {
+    res.send(error);
+  }
+});
+app.get("/user", userAuth, async (req, res) => {
   const userEmail = req.body.emailID;
   try {
     const users = await User.findOne({ emailID: userEmail });
@@ -56,7 +75,7 @@ app.get("/user", async (req, res) => {
     res.status(400).send("somthing went wrong");
   }
 });
-app.get("/feed", async (req, res) => {
+app.get("/feed", userAuth, async (req, res) => {
   try {
     const users = await User.find();
     res.send(users);
@@ -65,7 +84,7 @@ app.get("/feed", async (req, res) => {
   }
 });
 // delete the user from database
-app.delete("/user", async (req, res) => {
+app.delete("/user", userAuth, async (req, res) => {
   const userID = req.body.userId;
   try {
     const user = await User.findByIdAndDelete(userID);
@@ -76,7 +95,7 @@ app.delete("/user", async (req, res) => {
 });
 /// update data of the user
 
-app.patch("/user/:userId", async (req, res) => {
+app.patch("/user/:userId", userAuth, async (req, res) => {
   const userId = req.params?.userId;
   const data = req.body;
   try {
@@ -96,6 +115,12 @@ app.patch("/user/:userId", async (req, res) => {
     console.log(err.message);
     res.send("update failed" + err.message);
   }
+});
+
+app.post("/sendConnectionRequest", userAuth, (req, res) => {
+  const user = req.user;
+  console.log("sending a connection");
+  res.send(user.firstName + " sent a request");
 });
 connectDB()
   .then(() => {
