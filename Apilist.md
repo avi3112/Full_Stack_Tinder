@@ -21,6 +21,8 @@ ConnectionRequestRouter
 //userRouter
 -GET /user/request/received >> who has interested with me
 -GET /user/connection >>> who has connected with me
+
+// feed api very importand
 -GET /user/feed -- gets you the profile of all the users
 
 status:ignore,interested,accepted,rejected
