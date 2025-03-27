@@ -16,9 +16,11 @@ ConnectionRequestRouter
 
 -POST /request/review/:status/:requestID
 -POST /request/review/rejected/:requestID
+-- above 2 api done in one itself
 
--GET /user/connection
+//userRouter
 -GET /user/request/received
+-GET /user/connection
 -GET /user/feed -- gets you the profile of all the users
 
 status:ignore,interested,accepted,rejected
