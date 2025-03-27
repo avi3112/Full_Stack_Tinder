@@ -36,8 +36,15 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
           status: "accepted",
         },
       ],
-    }).populate("fromUserId", USER_SAFE_DATA);
-    const data = connectionRequest.map((row) => row.fromUserId);
+    })
+      .populate("fromUserId", USER_SAFE_DATA)
+      .populate("toUserId", USER_SAFE_DATA);
+    const data = connectionRequest.map((row) => {
+      if (row.fromUserId._id.toString() === loggedInUser._id.toString()) {
+        return row.toUserId;
+      }
+      row.fromUserId;
+    });
     res.json({ data });
   } catch (error) {
     res.status(400).send({ message: error.message });
