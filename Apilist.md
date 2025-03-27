@@ -25,4 +25,8 @@ ConnectionRequestRouter
 // feed api very importand
 -GET /user/feed -- gets you the profile of all the users
 
+//pagination
+
+.skip()
+.limit()
 status:ignore,interested,accepted,rejected
