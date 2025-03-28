@@ -44,10 +44,10 @@ authRouter.post("/login", async (req, res) => {
         { expiresIn: "2d" }
       );
       res.cookie("token", token);
-      res.send("user login succesfully");
+      return res.send(user);
     }
   } catch (err) {
-    res.status(400).send(err);
+    return res.status(401).json({ err: "Invalid password" });
   }
 });
 
