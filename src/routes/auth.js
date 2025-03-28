@@ -45,9 +45,11 @@ authRouter.post("/login", async (req, res) => {
       );
       res.cookie("token", token);
       return res.send(user);
+    } else {
+      res.send("invalid credential");
     }
-  } catch (err) {
-    return res.status(401).json({ err: "Invalid password" });
+  } catch (error) {
+    return res.status(401).json({ error: "Invalid password" });
   }
 });
 
